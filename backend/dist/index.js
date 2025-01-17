@@ -19,5 +19,8 @@ wss.on('connection', (socket) => {
             //@ts-ignore
             allSockets.filter((x) => x.room == currentUserRoom).map((y) => y.socket.send(parsedMessage.payload.message));
         }
+        if (parsedMessage.type == "leave") {
+            allSockets = allSockets.filter((x) => x.socket != socket);
+        }
     });
 });
