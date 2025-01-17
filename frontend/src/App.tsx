@@ -2,7 +2,17 @@ import { useEffect, useRef, useState } from "react"
 import Message from "./component/Message"
 
 function App() {
-  const[messages,setMessages]=useState(["hi there","hey"])
+  const[messages,setMessages]=useState([{
+    from:"me",
+    content:"hello world"
+  },{
+    from:"someone else",
+    content:"hi world"
+  },{
+    from:"me",
+    content:"How are you?"
+  }])
+
   const InputRef=useRef();
   const roomRef=useRef();
   const wsRef=useRef();
@@ -24,7 +34,7 @@ function App() {
     }))
   }
   function close(){
-    wsRef.current.close();
+    wsRef.current.send(JSON.stringify({type:"leave"}))
   }
   
   useEffect(()=>{
@@ -51,7 +61,9 @@ function App() {
 
     
     <div className="bg-slate-800 h-screen w-screen">
-      <div> {messages.map(m=><div><Message message={m}/> </div>)}</div>
+      <div> {messages.map(m=>
+        <div className={`w-full ${m.from=="me"?"text-right":"text-left"}`}><Message message={m.content}/> </div>)}
+      </div>
     
 
       <div className="m-2 fixed bottom-10 left-1/2" >

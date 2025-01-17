@@ -15,13 +15,15 @@ wss.on('connection',(socket)=>{
             allSockets.push({
                 socket,
                 room:parsedMessage.payload.roomId
-            })
-           
+            })           
         }
         if(parsedMessage.type=="chat"){
             const currentUserRoom=allSockets.find((x)=>x.socket==socket)?.room;
             //@ts-ignore
             allSockets.filter((x)=>x.room == currentUserRoom).map((y)=>y.socket.send(parsedMessage.payload.message));
+        }
+        if(parsedMessage.type=="leave"){
+            allSockets=allSockets.filter((x)=>x.socket!=socket);
         }
     })
 })
