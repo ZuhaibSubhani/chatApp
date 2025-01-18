@@ -16,18 +16,25 @@ function App() {
   const InputRef=useRef();
   const roomRef=useRef();
   const wsRef=useRef();
+
   function send(){
+
     const input=InputRef.current.value;
+
     wsRef.current.send(JSON.stringify({type:"chat",
       payload:{
         message:input
       }
     }))
-     
+  setMessages((prev)=>[...prev,{from:"me",content:input}])
+  InputRef.current.value=""
   }
+
+
   function room(){
     const input=roomRef.current.value;
-    wsRef.current.send(JSON.stringify({type:"join",
+    wsRef.current.send(JSON.stringify({
+      type:"join",
       payload:{
         roomId:input
       }
@@ -62,7 +69,7 @@ function App() {
     
     <div className="bg-slate-800 h-screen w-screen">
       <div> {messages.map(m=>
-        <div className={`w-full ${m.from=="me"?"text-right":"text-left"}`}><Message message={m.content}/> </div>)}
+        <div className={`w-full ${m.from=="me"?"bg-grey":"bg-brown"}`}><Message message={m.content}/> </div>)}
       </div>
     
 
