@@ -13,28 +13,24 @@ function App() {
     content:"How are you?"
   }])
 
+  console.log(messages)
   const InputRef=useRef();
   const roomRef=useRef();
   const wsRef=useRef();
+  const idRef=useRef();
 
   function send(){
-
     const input=InputRef.current.value;
-
     wsRef.current.send(JSON.stringify({type:"chat",
       payload:{
         message:input
       }
     }))
-  setMessages((prev)=>[...prev,{from:"me",content:input}])
-  InputRef.current.value=""
+     
   }
-
-
   function room(){
     const input=roomRef.current.value;
-    wsRef.current.send(JSON.stringify({
-      type:"join",
+    wsRef.current.send(JSON.stringify({type:"join",
       payload:{
         roomId:input
       }
@@ -47,7 +43,18 @@ function App() {
   useEffect(()=>{
     const ws=new WebSocket("ws://localhost:8080");
     ws.onmessage=(event)=>{
-      setMessages(m=>[...m,event.data])
+      const data=JSON.parse(event.data);
+      console.log(data);
+      if(data.type==="id"){
+        idRef.current=data.id
+        console.log(idRef.current)
+      }
+      if(data.type==="chat")
+        console.log(data.message)
+      const message=data.message;
+      setMessages((prevMessages)=>[...prevMessages,{from:data.id,content:message}])
+
+      
     }
     wsRef.current=ws;
     
@@ -69,7 +76,7 @@ function App() {
     
     <div className="bg-slate-800 h-screen w-screen">
       <div> {messages.map(m=>
-        <div className={`w-full ${m.from=="me"?"bg-grey":"bg-brown"}`}><Message message={m.content}/> </div>)}
+        <div className={`w-full ${m.from===idRef.current?"text-right":"text-left"}`}><Message message={m.content}/> </div>)}
       </div>
     
 
